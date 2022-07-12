@@ -1,65 +1,84 @@
 import React, { useState } from 'react';
-// eslint-disable-next-line import/no-cycle
 import MainPageLayout from '../components/MainPageLayout';
-// eslint-disable-next-line import/no-unresolved
 import { apiGet } from '../misc/Config';
 
 function Home() {
   const [input, setInput] = useState('');
-  // console.log(input);
-  const [results, setResult] = useState(null);
+  const [results, setResults] = useState(null);
+  const [searchOption, setSearchOption] = useState('shows');
 
-  function onInputChange(eventObj) {
-    // console.log(event.target.value);
-    setInput(eventObj.target.value);
-  }
+  const isShowsSearch = searchOption === 'shows';
 
-  function onSearch() {
-    apiGet(`/search/shows?q=${input}`).then(result => {
-      setResult(result);
-      console.log(result);
+  const onSearch = () => {
+    apiGet(`/search/${searchOption}?q=${input}`).then(result => {
+      setResults(result);
     });
-  }
+  };
 
-  function onKeyDown(event) {
-    if (event.keyCode === 13) {
-      // console.log(event.keyCode);
+  const onInputChange = ev => {
+    setInput(ev.target.value);
+  };
+
+  const onKeyDown = ev => {
+    if (ev.keyCode === 13) {
       onSearch();
     }
-  }
+  };
 
-  function renderResults() {
+  const onRadioChange = ev => {
+    setSearchOption(ev.target.value);
+  };
+
+  const renderResults = () => {
     if (results && results.length === 0) {
-      // this is when u type,unusual and api doesn't return anything.
-      return <div>No Results Found.</div>;
+      return <div>No results</div>;
     }
 
     if (results && results.length > 0) {
-      // when something is returned.
-
-      return (
-        <div>
-          {' '}
-          {results.map(item => (
-            <div key={item.show.id}>{item.show.name}</div>
-          ))}
-        </div>
-      );
+      return results[0].show
+        ? results.map(item => <div key={item.show.id}>{item.show.name}</div>)
+        : results.map(item => (
+            <div key={item.person.id}>{item.person.name}</div>
+          ));
     }
 
-    // default case when above two cases doesn't occur
     return null;
-  }
+  };
 
-  // return <div>GO TO HOME</div>;
   return (
     <MainPageLayout>
       <input
         type="text"
+        placeholder="Search for something"
         onChange={onInputChange}
-        value={input}
         onKeyDown={onKeyDown}
+        value={input}
       />
+
+      <div>
+        <label htmlFor="shows-search">
+          Shows
+          <input
+            id="shows-search"
+            type="radio"
+            value="shows"
+            checked={isShowsSearch}
+            onChange={onRadioChange}
+          />
+        </label>
+
+        <label htmlFor="actors-search">
+          Actors
+          <input
+            id="actors-search"
+            type="radio"
+            value="people"
+            checked={!isShowsSearch}
+            onChange={onRadioChange}
+          />
+        </label>
+      </div>
+
       <button type="button" onClick={onSearch}>
         Search
       </button>
