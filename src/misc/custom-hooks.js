@@ -5,17 +5,17 @@ function showsReducer(prevState, action) {
     case 'ADD': {
       return [...prevState, action.showId];
     }
+
     case 'REMOVE': {
       return prevState.filter(showId => showId !== action.showId);
     }
+
     default:
       return prevState;
   }
 }
 
 function usePersistedReducer(reducer, initialState, key) {
-  // for useReducer() we used below synatx.
-
   const [state, dispatch] = useReducer(reducer, initialState, initial => {
     const persisted = localStorage.getItem(key);
 
@@ -25,10 +25,10 @@ function usePersistedReducer(reducer, initialState, key) {
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(state));
   }, [state, key]);
+
   return [state, dispatch];
 }
 
 export function useShows(key = 'shows') {
-  // default parameter is passed
   return usePersistedReducer(showsReducer, [], key);
 }
