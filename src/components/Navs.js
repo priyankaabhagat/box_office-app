@@ -1,24 +1,32 @@
 /* eslint-disable func-names */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { NavList, LinkStyled } from './Navs.styled';
 
 // eslint-disable-next-line func-names
 
 const LINKS = [
-  { to: '/', item: 'HOME' },
-  { to: '/starred', item: 'STARRED' },
+  { to: '/', text: 'HOME' },
+  { to: '/starred', text: 'STARRED' },
 ];
 
 const Navs = function () {
+  const location = useLocation();
+
   return (
     <div>
-      <ul>
-        {LINKS.map(ele => (
-          <li key={ele.to}>
-            <Link to={ele.to}>{ele.item}</Link>
+      <NavList>
+        {LINKS.map(item => (
+          <li key={item.to}>
+            <LinkStyled
+              to={item.to}
+              className={item.to === location.pathname ? 'active' : ''}
+            >
+              {item.text}
+            </LinkStyled>
           </li>
         ))}
-      </ul>
+      </NavList>
     </div>
   );
 };
